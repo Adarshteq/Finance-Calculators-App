@@ -1,0 +1,451 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Finance Calculators 💰</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.1/build/qrcode.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <button class="theme-toggle" id="themeToggle">🌓</button>
+    
+    <div class="container">
+        <div class="tabs">
+            <div class="tab active" data-tab="interest-calculator">
+                <i class="fas fa-calculator"></i> Interest
+            </div>
+            <div class="tab" data-tab="bill-splitter">
+                <i class="fas fa-money-bill-wave"></i> Bill Splitter
+            </div>
+            <div class="tab" data-tab="itemized-bill">
+                <i class="fas fa-list"></i> Itemized Bill
+            </div>
+            <div class="tab" data-tab="debt-settlement">
+                <i class="fas fa-handshake"></i> Debt Settlement
+            </div>
+            <div class="tab" data-tab="history">
+                <i class="fas fa-history"></i> History
+            </div>
+        </div>
+        
+        <!-- Settings Bar -->
+        <div class="settings-bar">
+            <div class="setting-group">
+                <select id="languageSelect" aria-label="languageSelect">
+                    <option value="en">English</option>
+                    <option value="es">Español</option>
+                    <option value="fr">Français</option>
+                    <option value="de">Deutsch</option>
+                    <option value="hi">हिन्दी</option>
+                </select>
+                
+                <select id="currencySelect" aria-label="currencySelect">
+                    <option value="USD">USD ($)</option>
+                    <option value="EUR">EUR (€)</option>
+                    <option value="GBP">GBP (£)</option>
+                    <option value="INR">INR (₹)</option>
+                    <option value="JPY">JPY (¥)</option>
+                    <option value="CAD">CAD (C$)</option>
+                </select>
+            </div>
+            
+            <div class="setting-group">
+                <button class="btn-primary btn-sm" id="installBtn">
+                    <i class="fas fa-download"></i> Install App
+                </button>
+            </div>
+        </div>
+        
+        <!-- Interest Calculator -->
+        <div class="calculator active" id="interest-calculator">
+            <h1><i class="fas fa-calculator"></i> Interest Calculator</h1>
+            
+            <div class="input-card">
+                <div class="toggle-group">
+                    <div class="toggle-btn" id="simpleInterestBtn">Simple Interest</div>
+                    <div class="toggle-btn active" id="compoundInterestBtn">Compound Interest</div>
+                </div>
+                
+                <div class="input-group">
+                    <label>
+                        <span class="input-icon"><i class="fas fa-wallet"></i></span>
+                        Principal Amount
+                        <span class="tooltip">
+                            <i class="fas fa-info-circle"></i>
+                            <span class="tooltiptext">The initial amount of money invested or borrowed</span>
+                        </span>
+                    </label>
+                    <div class="input-group">
+                        <input type="number" id="principal" placeholder="Enter principal amount" min="0" step="0.01" />
+                        <button class="voice-input" id="voicePrincipal" title="Activate voice input for Principal Amount">
+                            <i class="fas fa-microphone" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>
+                        <span class="input-icon"><i class="fas fa-percentage"></i></span>
+                        Interest Rate (% per year)
+                    </label>
+                    <div class="input-group">
+                        <input type="number" id="interestRate" placeholder="Enter interest rate" min="0" step="0.01">
+                        <button class="voice-input" id="voiceRate" title="Activate voice input for Interest Rate">
+                            <i class="fas fa-microphone" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>
+                        <span class="input-icon"><i class="fas fa-clock"></i></span>
+                        Time Period
+                    </label>
+                    <div class="time-inputs">
+                        <div class="input-group">
+                            <input type="number" id="years" placeholder="Years" min="0">
+                        </div>
+                        <div class="input-group">
+                            <input type="number" id="months" placeholder="Months" min="0" max="11">
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="input-group" id="compoundFrequencyGroup">
+                    <label>
+                        <span class="input-icon"><i class="fas fa-sync-alt"></i></span>
+                        Compounding Frequency
+                    </label>
+                    <select id="compoundFrequency" aria-label="compoundFrequency">
+                        <option value="1">Annually</option>
+                        <option value="4">Quarterly</option>
+                        <option value="12" selected>Monthly</option>
+                        <option value="365">Daily</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn-primary" id="calculateBtn">
+                    <i class="fas fa-calculator"></i> Calculate
+                </button>
+                <button class="btn-secondary" id="resetBtn">
+                    <i class="fas fa-redo"></i> Reset
+                </button>
+            </div>
+            
+            <div class="result" id="result">
+                <h3><i class="fas fa-chart-line"></i> Calculation Results</h3>
+                
+                <div class="result-item">
+                    <div class="result-label">Interest Amount</div>
+                    <div class="result-value interest-amount" id="interestAmount">₹0.00</div>
+                </div>
+                
+                <div class="result-item">
+                    <div class="result-label">Total Amount</div>
+                    <div class="result-value total-amount" id="totalAmount">₹0.00</div>
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="interestChart"></canvas>
+                </div>
+                
+                <div class="share-options">
+                    <button class="btn-success share-btn" id="emailInterest">
+                        <i class="fas fa-envelope"></i> Email
+                    </button>
+                    <button class="btn-warning share-btn" id="smsInterest">
+                        <i class="fas fa-comment"></i> SMS
+                    </button>
+                    <button class="btn-primary share-btn" id="pdfInterest">
+                        <i class="fas fa-file-pdf"></i> PDF
+                    </button>
+                    <button class="btn-secondary share-btn" id="qrInterest">
+                        <i class="fas fa-qrcode"></i> QR
+                    </button>
+                </div>
+                
+                <div id="qrInterestContainer" class="qr-container" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <!-- Bill Splitter -->
+        <div class="calculator" id="bill-splitter">
+            <h1><i class="fas fa-money-bill-wave"></i> Bill Splitter</h1>
+            
+            <div class="input-card">
+                <div class="input-group">
+                    <label>
+                        <span class="input-icon"><i class="fas fa-receipt"></i></span>
+                        Total Bill Amount
+                    </label>
+                    <div class="input-group">
+                        <input type="number" id="billAmount" placeholder="Enter amount in your currency" min="0" step="0.01">
+                        <button class="voice-input" id="voiceBill" title="Activate voice input for Bill Amount">
+                            <i class="fas fa-microphone" aria-hidden="true"></i>
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>
+                        <span class="input-icon"><i class="fas fa-percentage"></i></span>
+                        Tax Rate (%)
+                    </label>
+                    <input type="number" id="taxRate" placeholder="Enter tax rate" min="0" step="0.01" value="0">
+                </div>
+                
+                <div class="input-group">
+                    <label>
+                        <span class="input-icon"><i class="fas fa-users"></i></span>
+                        Number of People
+                    </label>
+                    <input type="number" id="peopleCount" placeholder="How many people?" min="1" value="1">
+                </div>
+                
+                <div class="input-group">
+                    <label>
+                        <span class="input-icon"><i class="fas fa-hand-holding-usd"></i></span>
+                        Tip Percentage
+                    </label>
+                    <div class="tip-options">
+                        <button class="tip-btn" data-tip="5">5%</button>
+                        <button class="tip-btn" data-tip="10">10%</button>
+                        <button class="tip-btn" data-tip="15">15%</button>
+                        <button class="tip-btn" data-tip="20">20%</button>
+                        <input type="number" id="customTip" class="custom-tip" placeholder="Custom %" min="0">
+                    </div>
+                </div>
+                
+                <div class="input-group">
+                    <label>
+                        <span class="input-icon"><i class="fas fa-balance-scale"></i></span>
+                        Split Type
+                    </label>
+                    <div class="toggle-group">
+                        <div class="toggle-btn active" id="equalSplitBtn">Equal</div>
+                        <div class="toggle-btn" id="weightedSplitBtn">Weighted</div>
+                    </div>
+                </div>
+                
+                <div class="weight-container" id="weightContainer">
+                    <div class="input-group">
+                        <label>Enter weights for each person:</label>
+                        <div id="weightInputs"></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn-primary" id="splitCalculateBtn">
+                    <i class="fas fa-calculator"></i> Calculate
+                </button>
+                <button class="btn-secondary" id="splitResetBtn">
+                    <i class="fas fa-redo"></i> Reset
+                </button>
+            </div>
+            
+            <div class="result" id="splitResult">
+                <h3><i class="fas fa-user-check"></i> Each Person Pays</h3>
+                <div class="split-amount" id="splitAmount">₹0.00</div>
+                <div class="details" id="details">Total bill: ₹0.00 with 0% tip</div>
+                
+                <div class="chart-container">
+                    <canvas id="splitChart"></canvas>
+                </div>
+                
+                <div class="share-options">
+                    <button class="btn-success share-btn" id="emailSplit">
+                        <i class="fas fa-envelope"></i> Email
+                    </button>
+                    <button class="btn-warning share-btn" id="smsSplit">
+                        <i class="fas fa-comment"></i> SMS
+                    </button>
+                    <button class="btn-primary share-btn" id="pdfSplit">
+                        <i class="fas fa-file-pdf"></i> PDF
+                    </button>
+                    <button class="btn-secondary share-btn" id="qrSplit">
+                        <i class="fas fa-qrcode"></i> QR
+                    </button>
+                </div>
+                
+                <div id="qrSplitContainer" class="qr-container" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <!-- Itemized Bill -->
+        <div class="calculator" id="itemized-bill">
+            <h1><i class="fas fa-list"></i> Itemized Bill</h1>
+            
+            <div class="input-card">
+                <div class="input-group">
+                    <label>
+                        <span class="input-icon"><i class="fas fa-users"></i></span>
+                        People in Group
+                    </label>
+                    <input type="text" id="peopleNames" placeholder="Enter names separated by commas">
+                </div>
+                
+                <div class="input-group">
+                    <label>
+                        <span class="input-icon"><i class="fas fa-percentage"></i></span>
+                        Tax Rate (%)
+                    </label>
+                    <input type="number" id="itemTaxRate" placeholder="Enter tax rate" min="0" step="0.01" value="0">
+                </div>
+                
+                <div class="input-group">
+                    <label>
+                        <span class="input-icon"><i class="fas fa-hand-holding-usd"></i></span>
+                        Tip Percentage
+                    </label>
+                    <input type="number" id="itemTipRate" placeholder="Enter tip percentage" min="0" step="0.01" value="0">
+                </div>
+                
+                <div class="input-group">
+                    <label>
+                        <span class="input-icon"><i class="fas fa-plus-circle"></i></span>
+                        Add Items
+                    </label>
+                    <button class="btn-primary" id="addItemBtn">
+                        <i class="fas fa-plus"></i> Add Item
+                    </button>
+                </div>
+                
+                <div class="item-list" id="itemList">
+                    <!-- Items will be added here dynamically -->
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn-primary" id="calculateItemBtn">
+                    <i class="fas fa-calculator"></i> Calculate
+                </button>
+                <button class="btn-secondary" id="resetItemBtn">
+                    <i class="fas fa-redo"></i> Reset
+                </button>
+            </div>
+            
+            <div class="result" id="itemResult">
+                <h3><i class="fas fa-file-invoice-dollar"></i> Itemized Summary</h3>
+                
+                <div id="itemSummary">
+                    <!-- Summary will be added here dynamically -->
+                </div>
+                
+                <div class="chart-container">
+                    <canvas id="itemChart"></canvas>
+                </div>
+                
+                <div class="share-options">
+                    <button class="btn-success share-btn" id="emailItem">
+                        <i class="fas fa-envelope"></i> Email
+                    </button>
+                    <button class="btn-warning share-btn" id="smsItem">
+                        <i class="fas fa-comment"></i> SMS
+                    </button>
+                    <button class="btn-primary share-btn" id="pdfItem">
+                        <i class="fas fa-file-pdf"></i> PDF
+                    </button>
+                    <button class="btn-secondary share-btn" id="qrItem">
+                        <i class="fas fa-qrcode"></i> QR
+                    </button>
+                </div>
+                
+                <div id="qrItemContainer" class="qr-container" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <!-- Debt Settlement -->
+        <div class="calculator" id="debt-settlement">
+            <h1><i class="fas fa-handshake"></i> Debt Settlement</h1>
+            
+            <div class="input-card">
+                <div class="input-group">
+                    <label>
+                        <span class="input-icon"><i class="fas fa-users"></i></span>
+                        People in Group
+                    </label>
+                    <input type="text" id="debtPeople" placeholder="Enter names separated by commas">
+                </div>
+                
+                <div class="input-group">
+                    <label>
+                        <span class="input-icon"><i class="fas fa-money-bill"></i></span>
+                        Enter Debts
+                    </label>
+                    <button class="btn-primary" id="addDebtBtn">
+                        <i class="fas fa-plus"></i> Add Debt
+                    </button>
+                </div>
+                
+                <div id="debtList">
+                    <!-- Debts will be added here dynamically -->
+                </div>
+            </div>
+            
+            <div class="btn-group">
+                <button class="btn-primary" id="calculateDebtBtn">
+                    <i class="fas fa-calculator"></i> Calculate
+                </button>
+                <button class="btn-secondary" id="resetDebtBtn">
+                    <i class="fas fa-redo"></i> Reset
+                </button>
+            </div>
+            
+            <div class="result" id="debtResult">
+                <h3><i class="fas fa-exchange-alt"></i> Settlement Plan</h3>
+                
+                <div id="settlementPlan">
+                    <!-- Settlement plan will be added here dynamically -->
+                </div>
+                
+                <div class="share-options">
+                    <button class="btn-success share-btn" id="emailDebt">
+                        <i class="fas fa-envelope"></i> Email
+                    </button>
+                    <button class="btn-warning share-btn" id="smsDebt">
+                        <i class="fas fa-comment"></i> SMS
+                    </button>
+                    <button class="btn-primary share-btn" id="pdfDebt">
+                        <i class="fas fa-file-pdf"></i> PDF
+                    </button>
+                    <button class="btn-secondary share-btn" id="qrDebt">
+                        <i class="fas fa-qrcode"></i> QR
+                    </button>
+                </div>
+                
+                <div id="qrDebtContainer" class="qr-container" style="display: none;"></div>
+            </div>
+        </div>
+        
+        <!-- History -->
+        <div class="calculator" id="history">
+            <h1><i class="fas fa-history"></i> Calculation History</h1>
+            
+            <div class="input-card">
+                <div class="btn-group">
+                    <button class="btn-danger" id="clearHistoryBtn">
+                        <i class="fas fa-trash"></i> Clear History
+                    </button>
+                </div>
+                
+                <div class="history-list" id="historyList">
+                    <!-- History items will be added here dynamically -->
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
