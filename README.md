@@ -3,6 +3,8 @@
 
 A modern, responsive web application for various financial calculations including interest, bill splitting, itemized bills, and debt settlement.
 
+🔴 Live  https://adarshteq.github.io/Finance-Calculators-App/
+
 ## ✨ Features
 
 - **Interest Calculator**:
